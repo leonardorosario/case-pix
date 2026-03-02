@@ -23,7 +23,7 @@ public class ChavePixService {
         ValidadorChaveStrategy validador = validadores.stream()
                 .filter(v -> v.getTipoChave() == dto.getTipoChave())
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Tipo de chave não suportado."));
+                .orElseThrow(() -> new IllegalArgumentException("Tipo de chave não suportado"));
 
         validador.validar(dto.getValorChave());
 
