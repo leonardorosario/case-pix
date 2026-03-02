@@ -1,6 +1,8 @@
 package org.example.Service;
 
-import org.example.DTO.ChavePixRequestDTO;
+import jakarta.persistence.EntityNotFoundException;
+import org.example.DTO.Atualizacao.ChavePixAtualizacaoDTO;
+import org.example.DTO.Inclusao.ChavePixRequestDTO;
 import org.example.Entity.ChavePix;
 import org.example.Repository.ChavePixRepository;
 import org.example.Strategy.ValidadorChaveStrategy;
@@ -40,5 +42,21 @@ public class ChavePixService {
         novaChave.setNomeCorrentista(dto.getNomeCorrentista());
 
         return repository.save(novaChave);
+    }
+
+    public ChavePix alterarChave(ChavePixAtualizacaoDTO dto){
+        ChavePix chaveAlterada = repository.findById(dto.getId()).
+                orElseThrow(() -> new EntityNotFoundException("Chave Pix não encontrada para esse ID"));
+
+        if (chaveAlterada.getDataHoraInativacao() != null) {
+            throw new IllegalArgumentException("Não é permitido alterar os dados de uma chave inativada.");
+        }
+
+        chaveAlterada.setTipoConta(dto.getTipoConta());
+        chaveAlterada.setNumeroAgencia(dto.getNumeroAgencia());
+        chaveAlterada.setNumeroConta(dto.getNumeroConta());
+        chaveAlterada.setNomeCorrentista(dto.getNomeCorrentista());
+
+        return repository.save(chaveAlterada);
     }
 }
