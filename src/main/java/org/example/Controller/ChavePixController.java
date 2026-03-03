@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/chaves")
 public class ChavePixController {
@@ -32,6 +34,7 @@ public class ChavePixController {
             return ResponseEntity.unprocessableContent().body(e.getMessage());
         }
     }
+
     @PutMapping
     public ResponseEntity<?> alterarChave(@RequestBody @Valid ChavePixAtualizacaoDTO dto){
         try {
@@ -43,6 +46,21 @@ public class ChavePixController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         catch (IllegalArgumentException e) {
+            return ResponseEntity.unprocessableContent().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> inativarChave(@PathVariable UUID id) {
+        try{
+            ChavePix chaveInativada = service.inativarChave(id);
+
+            return ResponseEntity.ok().body(chaveInativada);
+        }
+        catch (EntityNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (IllegalArgumentException e){
             return ResponseEntity.unprocessableContent().body(e.getMessage());
         }
     }

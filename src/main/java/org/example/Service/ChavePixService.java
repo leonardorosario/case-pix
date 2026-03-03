@@ -8,7 +8,9 @@ import org.example.Repository.ChavePixRepository;
 import org.example.Strategy.ValidadorChaveStrategy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ChavePixService {
@@ -58,5 +60,18 @@ public class ChavePixService {
         chaveAlterada.setNomeCorrentista(dto.getNomeCorrentista());
 
         return repository.save(chaveAlterada);
+    }
+
+    public ChavePix inativarChave(UUID id){
+        ChavePix chaveExistente = repository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Chave Pix não encontrada para esse Id"));
+
+        if(chaveExistente.getDataHoraInativacao() != null){
+            throw new IllegalArgumentException("Esta chave Pix já foi desativada");
+        }
+
+        chaveExistente.setDataHoraInativacao(LocalDateTime.now());
+
+        return repository.save(chaveExistente);
     }
 }
