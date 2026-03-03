@@ -5,11 +5,14 @@ import jakarta.validation.Valid;
 import org.example.DTO.Atualizacao.ChavePixAtualizacaoDTO;
 import org.example.DTO.Inclusao.ChavePixRequestDTO;
 import org.example.Entity.ChavePix;
+import org.example.Entity.TipoChave;
 import org.example.Service.ChavePixService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
@@ -63,5 +66,30 @@ public class ChavePixController {
         catch (IllegalArgumentException e){
             return ResponseEntity.unprocessableContent().body(e.getMessage());
         }
+    }
+    @GetMapping
+    public ResponseEntity<?> consultarChaves(
+            @RequestParam(required = false) UUID id,
+            @RequestParam(required = false) TipoChave tipoChave,
+            @RequestParam(required = false) Integer numeroAgencia,
+            @RequestParam(required = false) Integer numeroConta,
+            @RequestParam(required = false) String nomeCorrentista,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dataInclusao,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") LocalDate dataInativacao
+            ){
+        if(id != null){
+            boolean outroFiltro = (tipoChave != null || numeroAgencia != null || numeroConta != null
+                    || nomeCorrentista != null || dataInclusao != null || dataInativacao != null);
+
+            if(outroFiltro){
+                return ResponseEntity.unprocessableContent().body("Informando o ID nenhum outro filtro pode ser usado");
+            }
+        }
+
+        if(dataInclusao != null && dataInativacao != null){
+            return ResponseEntity.unprocessableContent().body("Não é permitida a combinação dos filtros de Data de inclusão " +
+                                                                                "e Data de inativação. Utilize apenas um deles");
+        }
+        return ResponseEntity.ok("Validações concluidas");
     }
 }
