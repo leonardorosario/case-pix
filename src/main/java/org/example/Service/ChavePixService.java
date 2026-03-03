@@ -4,10 +4,14 @@ import jakarta.persistence.EntityNotFoundException;
 import org.example.DTO.Atualizacao.ChavePixAtualizacaoDTO;
 import org.example.DTO.Inclusao.ChavePixRequestDTO;
 import org.example.Entity.ChavePix;
+import org.example.Entity.TipoChave;
 import org.example.Repository.ChavePixRepository;
+import org.example.Specification.ChavePixSpecification;
 import org.example.Strategy.ValidadorChaveStrategy;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -73,5 +77,14 @@ public class ChavePixService {
         chaveExistente.setDataHoraInativacao(LocalDateTime.now());
 
         return repository.save(chaveExistente);
+    }
+
+    public List<ChavePix> consultarChaves(UUID id, TipoChave tipoChave, Integer numeroAgencia, Integer numeroConta,
+                                         String nomeCorrentista, LocalDate dataInclusao, LocalDate dataInativacao){
+        Specification<ChavePix> spec = ChavePixSpecification.comFiltros(
+                id, tipoChave, numeroAgencia, numeroConta, nomeCorrentista, dataInclusao, dataInativacao
+        );
+
+        return repository.findAll(spec);
     }
 }
